@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, VARCHAR, Date, Text, CHAR
+import json
 
 #Read environment JSON file
 with open('/python/project-bacchanal/secrets.json') as env:
