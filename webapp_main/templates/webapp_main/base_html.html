@@ -1,0 +1,57 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- custom css-->
+    <link rel="stylesheet" type="text/css" href="{%  static 'webapp_main/main.css' %}">
+
+    <!--Google Fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet"> 
+
+    <!--Google Icons-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    {% if title%}
+        <title>Guyana News - {{ title }}</title>
+    {% else %}
+        <title>Guyana News</title>
+    {% endif%}
+</head>
+<body>
+    {% block nav %}
+    <div class="top_nav">
+        <ul>
+            <li class="top_nav_li_logo">
+                <a href="{% url 'news-home' %}"><img src="{% static 'webapp_main/images/guyana_logo.png' %}" alt="guyana's map"></a>
+
+            </li>
+
+            <ul style="margin-top: 20px;">
+                <li class="top_nav_li">
+                    <a href="{% url 'news-home' %}" class="top_nav_a"><i class="material-icons">home</i></a>
+                </li>
+
+                <li class="top_nav_li">
+		    	<a href="{% url 'source' 'kaieteur' %}" class="top_nav_a"><i class="material-icons">book</i><p class="main_font">kaieteur</p></a>
+                </li>
+                <li class="top_nav_li">
+			<a href="{% url 'source' 'stabroek' %}" class="top_nav_a"><i class="material-icons">book</i><p class="main_font">stabroek</p></a>
+                </li>
+            </ul>
+
+            <span>
+                <i class="material-icons">help</i>
+            </span>
+
+        </ul>        
+    </div>
+    {% endblock nav %}
+
+    {% block content%}
+    {% endblock content %}
+</body>
+</html>

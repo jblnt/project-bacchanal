@@ -1,0 +1,24 @@
+{% extends "webapp_main/base_html.html" %}
+{% load get_images %}
+
+{% block content %}
+<div class="art_body flex">
+        <div class="sections">
+                {% if article.images != "none" %}
+                        <div class="art_images_box flex">
+                        {% for img in article.images|spl %}
+                                <a href="{{ img }}"><img class="art_image" src="{{ img }}" alt=""></a>                                             
+                        {% endfor %}
+                        </div>  
+                {% endif %}
+
+                <article>
+                        <h3 class="detailed_title">{{ article.title|safe }}</h3>
+                        {% if article.content %}
+                                <p class="detailed_cont">{{ article.content|safe }}</p>
+                        {% endif %}
+                </article>
+                
+        </div>
+</div>
+{% endblock content %}

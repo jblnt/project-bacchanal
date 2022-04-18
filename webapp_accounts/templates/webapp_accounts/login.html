@@ -1,0 +1,47 @@
+{% extends "webapp_main/base_html.html" %}
+
+<!--remove the nav elements from login page-->
+{% block nav %}
+{% endblock nav %}
+
+{% block content %}
+<div class="sections log_ main_font">
+    <h1>Login</h1>
+
+    {% if form.errors %}
+    <p>Your username and password didn't match. Please try again.</p>
+    {% endif %}
+
+    {% if next %}
+        {% if user.is_authenticated %}
+        <p>Your account doesn't have access to this page. To proceed,
+        please login with an account that has access.</p>
+        {% else %}
+        <p>Please login to see this page.</p>
+        {% endif %}
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <table class="table">
+        <tr>
+            <td>{{ form.username.label_tag }}</td>
+            <td>{{ form.username }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.password.label_tag }}</td>
+            <td>{{ form.password }}</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" value="Login" class="main_font">Login</button>
+            </td>
+        </tr>
+        </table>
+
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,12 @@
+{% extends "webapp_main/base_html.html" %}
+
+<!--remove the nav elements from login page-->
+{% block nav %}
+{% endblock nav %}
+
+{% block content %}
+    <div class="main_font sections log_">
+        <h1 class="main_font">You Have Been Logged Out...</h1>
+        <a href="{% url 'news-home' %}" class="main_font">Home</a>
+    </div>
+{% endblock content %}
