@@ -2,117 +2,113 @@
 {% load get_images %}
 {% load static %}
 
-{% block content %}
-<div class="home_main flex">
-    <div class='flex search_user main_font'>
-        <a href="javascript:void(0)" class="home-icon" onclick="openNav()"><img src="{% static 'webapp_main/images/guyana_logo.png' %}" alt="guyana's map"></a>
+{% block search %}
 
-        <div id="main_overlay" class="overlay flex">
-                <a href="javascript:void(0)" class="cls" onclick="closeNav()">x</a>
-                <div class="overlay_content">
-                    <a href="{% url 'news-home' %}">Home</a>
-                    <a href="{% url 'source' 'kaieteur'  %}">Kaieteur</a>
-                    <a href="{% url 'source' 'stabroek' %}">Stabroek</a>
-                </div>
+    <div class="d-flex align-items-center">
+        <form action="{% url 'global-search' %}" method="GET" class="d-flex">
+            {{ form }}
+            <input type="submit" value="Search" class="ms-1 btn btn-primary"/>
+        </form>
+    
+        {% if user.is_authenticated %}
+            <div class="ms-3 d-flex">
+                <span class="material-icons">face</span>
+                <span class="ms-1">{{ user.username }} | <a href="{% url 'logout' %}">Logout</a></span>
+            </div>
+        {% else %}
+            <div class="ms-3 d-flex">
+                <span class="material-icons">no_accounts</span>
+                <span class="ms-1">Guest | <a href="{% url 'login' %}">Login</a></span>
+            </div>
+        {% endif %}
+
+    </div>
+
+
+{% endblock search %}
+
+{% block content %}
+    <div class="col-md-8 mt-3 d-flex flex-column container-fluid border">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="display-3">{{ topic }}</h1>
+
+            <div class="dropdown">
+                <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown"> Topics &#43 </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="{% url 'category-sports' base 'sports' %}" class="dropdown-item">Sports</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'category-sports' base 'letters' %}" class="dropdown-item">Letters</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'category-sports' base 'others' %}" class="dropdown-item">Others</a>
+                    </li>
+                </ul>
+            </div> 
         </div>
 
-        {% if form %}
-            <form action="{% url 'global-search' %}" method="GET">
-                {{ form }}
-            </form>
+        <div>
+            <ul class="home_ul">
+                {% for article in articles %}
+                    <section class="sections">
+                        {% if article.images != "none" %}
+                            <div class="home_img_box">            
+                                <img class="home_img" src="{{ article.images|spl|first }}" alt="article thumbnail">
+                            </div>
+                        {% endif %}
 
-            {% if user.is_authenticated %}
-                <p>Hello, {{ user.username }} &nbsp; | &nbsp;<a href="{% url 'logout' %}">Logout</a></p>
-            {% else %}
-                <p>Hello, Guest &nbsp; | &nbsp;<a href="{% url 'login' %}">Login</a></p>
-            {% endif %}            
+                        <li>
+                            <p><a href="{% url 'article-detail'  article.id article.slug %}" class="home_a">{{ article.title|safe }}</a></p>
+                            <div class="secondary_info meta_font">
+                                <p class="source"> -> {{ article.source }}<p class="meta_tag">&nbsp;|&nbsp;{{ article.tag }}&nbsp;|&nbsp;{{ article.date|date:'d N Y' }} </p></p>
+                            </div>
+                            <p class="home_p"> {{ article.content|safe|truncatewords:60 }} </p>
+                        </li>
+                    </section>
+                {% endfor %}
+            </ul>
+        </div>
 
-        {% else %}
-                <p style="margin-left: auto;">Hello, {{ user.username }} &nbsp; | &nbsp; <a href="{% url 'logout' %}">Logout</a></p>
-        {% endif %}
-    </div>
-    <div class="top flex">
-        <h1 class="home_topic main_font">{{ topic }}</h1>
-
-        <div class="dropdown_box">
-           <button class="topics_btn main_font"> Topics &#43 </button>
-            <div class="dropdown_list">
-                <a href="{% url 'category-sports' base 'sports' %}">Sports</as>
-                <a href="{% url 'category-sports' base 'letters' %}">Letters</a>
-                <a href="{% url 'category-sports' base 'others' %}">Others</a>
-            </div>
-        </div>        
-    </div>
-
-    <ul class="home_ul">
-    {% for article in articles %}
-    <section class="sections">
-        {% if article.images != "none" %}
-            <div class="home_img_box">            
-                <img class="home_img" src="{{ article.images|spl|first }}" alt="article thumbnail">
-            </div>
-        {% endif %}
-
-        <li>
-            <p><a href="{% url 'article-detail'  article.id article.slug %}" class="home_a">{{ article.title|safe }}</a></p>
-            <div class="secondary_info meta_font">
-                <p class="source"> -> {{ article.source }}<p class="meta_tag">&nbsp;|&nbsp;{{ article.tag }}&nbsp;|&nbsp;{{ article.date|date:'d N Y' }} </p></p>
-            </div>
-            <p class="home_p"> {{ article.content|safe|truncatewords:60 }} </p>
-        </li>
-    </section>
-    {% endfor %}
-    </ul>
-</div>
-
-<div" class="pagination flex">
-    <nav aria-label="Article List Pages">
-        <ul class="page_nav_ul flex">
-            {% if page_obj.has_previous %}
-                {% if not q %}
-                    <li class="page_nav_li"><a href="?page=1" class="page_nav_a main_font">&laquo; first</a></li>
-                    <li class="page_nav_li"><a href="?page={{ page_obj.previous_page_number }}" class="page_nav_a main_font">{{ page_obj.previous_page_number }}</a></li>
-                {% else %}
-                    <li class="page_nav_li"><a href="?q={{ q }}&page=1" class="page_nav_a main_font">&laquo; first</a></li>
-                    <li class="page_nav_li"><a href="?q={{ q }}&page={{ page_obj.previous_page_number }}" class="page_nav_a main_font">{{ page_obj.previous_page_number }}</a></li>
-                {% endif %}
-            {% else %}
-                <li class="page_nav_li"><span class="page_nav_disabled main_font">&laquo; first</span></li>
-            {% endif %}
-
-            <li class="page_nav_li"><span class="page_nav_active main_font">{{ page_obj.number }}</span></li>
-            
-            {% if page_obj.has_next %}
-                {% if not q %}
-                    <li class="page_nav_li"><a href="?page={{ page_obj.next_page_number }}" class="page_nav_a main_font">{{ page_obj.next_page_number }}</a></li>
-                    <li class="page_nav_li"><a href="?page={{ page_obj.paginator.num_pages }}" class="page_nav_a main_font">last &raquo;</a></li>
-                {% else %}
-                    <li class="page_nav_li"><a href="?q={{ q }}&page={{ page_obj.next_page_number }}" class="page_nav_a main_font">{{ page_obj.next_page_number }}</a></li>
-                    <li class="page_nav_li"><a href="?q={{ q }}&page={{ page_obj.paginator.num_pages }}" class="page_nav_a main_font">last &raquo;</a></li>
-                {% endif %}
-            {% else %}
-                <li class="page_nav_li"><span class="page_nav_disabled">last &raquo;</span></li>
-            {% endif %}
-        </ul>
-    </nav>
+        <div class="d-flex justify-content-between">
+            <nav aria-label="Article List Pages">
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        {% if not q %}
+                            <li class="page-item"><a href="?page=1" class="page-link">&laquo; first</a></li>
+                            <li class="page-item"><a href="?page={{ page_obj.previous_page_number }}" class="page-link">{{ page_obj.previous_page_number }}</a></li>
+                        {% else %}
+                            <li class="page-item"><a href="?q={{ q }}&page=1" class="page-link">&laquo; first</a></li>
+                            <li class="page-item"><a href="?q={{ q }}&page={{ page_obj.previous_page_number }}" class="page-link">{{ page_obj.previous_page_number }}</a></li>
+                        {% endif %}
+                    {% else %}
+                        <li class="page-item"><span class="page-link disabled">&laquo; first</span></li>
+                    {% endif %}
     
-        {% if form_date %}
-            <div>
-                <form action="{% url 'archive' %}" method="GET">
-                    {{ form_date }}
-                    <input type="submit" value="Submit">
-                </form>
-            </div>
-        {% endif %}
-
-</div>
-
-<script>
-    function openNav() {
-        document.getElementById("main_overlay").style.width = "100%";
-    }
-    function closeNav() {
-        document.getElementById("main_overlay").style.width = "0%";
-    }
-</script>
+                    <li class="page-item"><span class="page-link active">{{ page_obj.number }}</span></li>
+                    
+                    {% if page_obj.has_next %}
+                        {% if not q %}
+                            <li class="page-item"><a href="?page={{ page_obj.next_page_number }}" class="page-link">{{ page_obj.next_page_number }}</a></li>
+                            <li class="page-item"><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">last &raquo;</a></li>
+                        {% else %}
+                            <li class="page-item"><a href="?q={{ q }}&page={{ page_obj.next_page_number }}" class="page-link">{{ page_obj.next_page_number }}</a></li>
+                            <li class="page-item"><a href="?q={{ q }}&page={{ page_obj.paginator.num_pages }}" class="page-link">last &raquo;</a></li>
+                        {% endif %}
+                    {% else %}
+                        <li class="page-item"><span class="page-link disabled">last &raquo;</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            
+            {% if form_date %}
+                <div>
+                    <form action="{% url 'archive' %}" method="GET" class="d-flex">
+                        {{ form_date }}
+                        <input type="submit" value="Submit" class="btn btn-primary ms-1">
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 {% endblock content %}
