@@ -5,40 +5,45 @@
 {% endblock nav %}
 
 {% block content %}
-<div class="sections log_ main_font">
-    <h1>Login</h1>
-
+<div class="container-fluid col-lg-5 p-3 mt-3 login-dialog">
+    <div class="d-flex justify-content-center mb-3 border-bottom border-dark">
+        <h1 class="main-font seconday-color">Login</h1>
+    </div>
+    
     {% if form.errors %}
-    <p>Your username and password didn't match. Please try again.</p>
+        <p class="bg-danger p-3 text-light">Your username and password didn't match. Please try again.</p>
     {% endif %}
 
     {% if next %}
         {% if user.is_authenticated %}
-        <p>Your account doesn't have access to this page. To proceed,
-        please login with an account that has access.</p>
+            <p>Your account doesn't have access to this page. To proceed, please login with an account that has access.</p>
         {% else %}
-        <p>Please login to see this page.</p>
+            <p>Please login to see this page.</p>
         {% endif %}
     {% endif %}
 
     <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
-        <table class="table">
-        <tr>
-            <td>{{ form.username.label_tag }}</td>
-            <td>{{ form.username }}</td>
-        </tr>
-        <tr>
-            <td>{{ form.password.label_tag }}</td>
-            <td>{{ form.password }}</td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <button type="submit" value="Login" class="main_font">Login</button>
-            </td>
-        </tr>
-        </table>
+
+        <div class="mt-2 d-flex">
+            <span class="col-4 col-md-3 col-xl-2 seconday-color secondary-font">
+                {{ form.username.label_tag }}
+            </span>
+            
+            {{ form.username }}
+        </div>
+
+        <div class="mt-2 d-flex">
+            <span class="col-4 col-md-3 col-xl-2 seconday-color secondary-font">
+                {{ form.password.label_tag }}
+            </span>
+            
+            {{ form.password }}
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <button type="submit" value="Login" class="btn btn-primary mt-2">Login</button>
+        </div>
 
         <input type="hidden" name="next" value="{{ next }}">
     </form>

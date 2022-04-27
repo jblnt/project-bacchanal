@@ -1,102 +1,139 @@
 {% extends "webapp_main/base_html.html" %}
 {% load get_images %}
-{% load static %}
 
 {% block search %}
 
-    <div class="d-flex align-items-center">
-        <form action="{% url 'global-search' %}" method="GET" class="d-flex">
-            {{ form }}
-            <input type="submit" value="Search" class="ms-1 btn btn-primary"/>
-        </form>
-    
+    <div class="d-flex align-items-center flex-column flex-lg-row">
+
         {% if user.is_authenticated %}
             <div class="ms-3 d-flex">
-                <span class="material-icons">face</span>
-                <span class="ms-1">{{ user.username }} | <a href="{% url 'logout' %}">Logout</a></span>
+                <span class="material-icons seconday-color">face</span>
+                <span class="ms-1 seconday-color">{{ user.username }} | <a href="{% url 'logout' %}" class="account-link main-font">Logout</a></span>
             </div>
         {% else %}
             <div class="ms-3 d-flex">
-                <span class="material-icons">no_accounts</span>
-                <span class="ms-1">Guest | <a href="{% url 'login' %}">Login</a></span>
+                <span class="material-icons seconday-color">no_accounts</span>
+                <span class="ms-1 seconday-color">Guest | <a href="{% url 'login' %}" class="text-decoration-none account-link main-font">Login</a></span>
             </div>
         {% endif %}
 
+        {% if form %}
+        
+        <form action="{% url 'global-search' %}" method="GET" class="d-flex ms-3">
+            {{ form }}
+            <input type="submit" value="Search" class="btn btn-primary ms-1"/>
+        </form>
+
+        {% endif %}
     </div>
 
 
 {% endblock search %}
 
 {% block content %}
-    <div class="col-md-8 mt-3 d-flex flex-column container-fluid border">
+    <div class="col-md-8 my-3 d-flex flex-column container-fluid">
         <div class="d-flex justify-content-between align-items-center">
-            <h1 class="display-3">{{ topic }}</h1>
+            <h1 class="display-3 seconday-color text-uppercase">{{ topic }}</h1>
 
             <div class="dropdown">
                 <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown"> Topics &#43 </button>
+
+                {% if source == "query" %}
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="{% url 'category-sports' base 'sports' %}" class="dropdown-item">Sports</a>
+                        <a href="{% url 'global-search' %}?q={{ q }}&tag=sports" class="dropdown-item">Sports</a>
                     </li>
                     <li>
-                        <a href="{% url 'category-sports' base 'letters' %}" class="dropdown-item">Letters</a>
+                        <a href="{% url 'global-search' %}?q={{ q }}&tag=letters" class="dropdown-item">Letters</a>
                     </li>
                     <li>
-                        <a href="{% url 'category-sports' base 'others' %}" class="dropdown-item">Others</a>
+                        <a href="{% url 'global-search' %}?q={{ q }}&tag=others" class="dropdown-item">Others</a>
                     </li>
                 </ul>
+
+                {% elif source == "archive" %}
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="{% url 'archive' %}?q={{ q }}&tag=sports" class="dropdown-item">Sports</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'archive' %}?q={{ q }}&tag=letters" class="dropdown-item">Letters</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'archive' %}?q={{ q }}&tag=others" class="dropdown-item">Others</a>
+                    </li>
+                </ul>
+
+                {% else %}
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="{% url 'tags' %}?source={{ source }}&tag=sports" class="dropdown-item">Sports</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'tags' %}?source={{ source }}&tag=letters" class="dropdown-item">Letters</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'tags' %}?source={{ source }}&tag=others" class="dropdown-item">Others</a>
+                    </li>
+                </ul>
+                {% endif %}
+
             </div> 
         </div>
 
         <div>
-            <ul class="home_ul">
-                {% for article in articles %}
-                    <section class="sections">
-                        {% if article.images != "none" %}
-                            <div class="home_img_box">            
-                                <img class="home_img" src="{{ article.images|spl|first }}" alt="article thumbnail">
-                            </div>
-                        {% endif %}
+            {% for article in articles %}
+                <section class="d-flex my-3 p-3 article-section rounded-3">
+                    {% if article.images != "none" %}
+                        <div class="col-2">            
+                            <img src="{{ article.images|spl|first }}" alt="article thumbnail" class="img-thumbnail">
+                        </div>
+                    {% endif %}
 
-                        <li>
-                            <p><a href="{% url 'article-detail'  article.id article.slug %}" class="home_a">{{ article.title|safe }}</a></p>
-                            <div class="secondary_info meta_font">
-                                <p class="source"> -> {{ article.source }}<p class="meta_tag">&nbsp;|&nbsp;{{ article.tag }}&nbsp;|&nbsp;{{ article.date|date:'d N Y' }} </p></p>
-                            </div>
-                            <p class="home_p"> {{ article.content|safe|truncatewords:60 }} </p>
-                        </li>
-                    </section>
-                {% endfor %}
-            </ul>
+                    <div class="ms-3">
+                        <div>
+                            <a href="{% url 'article-detail'  article.id article.slug %}" class="text-decoration-none fs-4 fw-bold seconday-color main-font">{{ article.title|safe }}</a>
+                        </div>
+                        <div class="my-2">
+                            <span class="fw-light seconday-color">
+                                {{ article.source }} &nbsp;|&nbsp;{{ article.tag }}&nbsp;|&nbsp;{{ article.date|date:'d N Y' }}
+                            </span>
+                        </div>
+                        <div>
+                            <p class="secondary-font" style="color: white;"> {{ article.content|safe|truncatewords:80 }} </p>
+                        </div>
+                    </div>
+                </section>
+            {% endfor %}
         </div>
 
         <div class="d-flex justify-content-between">
             <nav aria-label="Article List Pages">
                 <ul class="pagination">
                     {% if page_obj.has_previous %}
-                        {% if not q %}
+                        {% if not query %}
                             <li class="page-item"><a href="?page=1" class="page-link">&laquo; first</a></li>
                             <li class="page-item"><a href="?page={{ page_obj.previous_page_number }}" class="page-link">{{ page_obj.previous_page_number }}</a></li>
                         {% else %}
-                            <li class="page-item"><a href="?q={{ q }}&page=1" class="page-link">&laquo; first</a></li>
-                            <li class="page-item"><a href="?q={{ q }}&page={{ page_obj.previous_page_number }}" class="page-link">{{ page_obj.previous_page_number }}</a></li>
+                            <li class="page-item"><a href="?{{ query }}&page=1" class="page-link">&laquo; first</a></li>
+                            <li class="page-item"><a href="?{{ query }}&page={{ page_obj.previous_page_number }}" class="page-link">{{ page_obj.previous_page_number }}</a></li>
                         {% endif %}
                     {% else %}
-                        <li class="page-item"><span class="page-link disabled">&laquo; first</span></li>
+                        <li class="page-item disabled"><span class="page-link">&laquo; first</span></li>
                     {% endif %}
     
-                    <li class="page-item"><span class="page-link active">{{ page_obj.number }}</span></li>
+                    <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
                     
                     {% if page_obj.has_next %}
-                        {% if not q %}
+                        {% if not query %}
                             <li class="page-item"><a href="?page={{ page_obj.next_page_number }}" class="page-link">{{ page_obj.next_page_number }}</a></li>
                             <li class="page-item"><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">last &raquo;</a></li>
                         {% else %}
-                            <li class="page-item"><a href="?q={{ q }}&page={{ page_obj.next_page_number }}" class="page-link">{{ page_obj.next_page_number }}</a></li>
-                            <li class="page-item"><a href="?q={{ q }}&page={{ page_obj.paginator.num_pages }}" class="page-link">last &raquo;</a></li>
+                            <li class="page-item"><a href="?{{ query }}&page={{ page_obj.next_page_number }}" class="page-link">{{ page_obj.next_page_number }}</a></li>
+                            <li class="page-item"><a href="?{{ query }}&page={{ page_obj.paginator.num_pages }}" class="page-link">last &raquo;</a></li>
                         {% endif %}
                     {% else %}
-                        <li class="page-item"><span class="page-link disabled">last &raquo;</span></li>
+                        <li class="page-item disabled"><span class="page-link">last &raquo;</span></li>
                     {% endif %}
                 </ul>
             </nav>

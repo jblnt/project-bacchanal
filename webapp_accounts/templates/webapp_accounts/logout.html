@@ -5,8 +5,12 @@
 {% endblock nav %}
 
 {% block content %}
-    <div class="main_font sections log_">
-        <h1 class="main_font">You Have Been Logged Out...</h1>
-        <a href="{% url 'news-home' %}" class="main_font">Home</a>
+<div class="container-fluid col-lg-5 p-3 mt-3 login-dialog">
+    <div class="d-flex justify-content-center mb-3 border-bottom border-dark">
+        <h1 class="main-font seconday-color">Logged Out</h1>
     </div>
+    <span class="main-font seconday-color d-flex justify-content-center">
+        <a href="{% url 'news-home' %}" class="main-font text-decoration-none">Home</a>
+    </span>
+</div>
 {% endblock content %}
